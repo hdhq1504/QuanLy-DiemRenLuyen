@@ -36,29 +36,32 @@
             // 
             this.lblWelcome.AutoSize = true;
             this.lblWelcome.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblWelcome.Location = new System.Drawing.Point(150, 20);
+            this.lblWelcome.Location = new System.Drawing.Point(112, 16);
+            this.lblWelcome.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblWelcome.Name = "lblWelcome";
-            this.lblWelcome.Size = new System.Drawing.Size(158, 28);
+            this.lblWelcome.Size = new System.Drawing.Size(126, 21);
             this.lblWelcome.TabIndex = 0;
             this.lblWelcome.Text = "Chào mừng bạn!";
             // 
             // btnLogout
             // 
-            this.btnLogout.Location = new System.Drawing.Point(170, 60);
+            this.btnLogout.Location = new System.Drawing.Point(128, 49);
+            this.btnLogout.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnLogout.Name = "btnLogout";
-            this.btnLogout.Size = new System.Drawing.Size(138, 23);
+            this.btnLogout.Size = new System.Drawing.Size(104, 19);
             this.btnLogout.TabIndex = 1;
             this.btnLogout.Text = "Đăng Xuất";
             this.btnLogout.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(600, 366);
             this.Controls.Add(this.btnLogout);
             this.Controls.Add(this.lblWelcome);
             this.Location = new System.Drawing.Point(600, 400);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Hệ Thống Quản Lý Điểm Rèn Luyện";
