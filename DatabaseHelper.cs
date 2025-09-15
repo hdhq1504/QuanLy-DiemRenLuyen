@@ -9,54 +9,60 @@ using Oracle.ManagedDataAccess.Client;
 
 public class DatabaseHelper
 {
-    public static OracleConnection Conn;
+    private static OracleConnection Conn;
 
-    public static string Host;
-    public static string Port;
-    public static string Sid;
-    public static string User;
-    public static string Password;
+    private static string Host;
+    private static string Port;
+    private static string Sid;
+    private static string User;
+    private static string Password;
 
     public static void Set_DatabaseHelper(string host, string port, string sid, string user, string pass)
     {
-        DatabaseHelper.Host = host;
-        DatabaseHelper.Port = port;
-        DatabaseHelper.Sid = sid;
-        DatabaseHelper.User = user;
-        DatabaseHelper.Password = pass;
+        Host = host;
+        Port = port;
+        Sid = sid;
+        User = user;
+        Password = pass;
     }
 
     public static bool Connect()
     {
-        string connsys = "";
         try
         {
-            if (User.ToUpper().Equals("SYS"))
+            string connsys = "";
+            if (!string.IsNullOrEmpty(User) && User.ToUpper().Equals("SYS"))
             {
                 connsys = ";DBA Privilege=SYSDBA";
             }
 
-            string connString = "Data Source=(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = "
-                + Host + ")(PORT = " + Port + "))(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME="
-                + Sid + "))); User ID=" + User + " ; Password = " + Password + connsys;
+            // Dùng SID (orcl)
+            string connString =
+                "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=" + Host +
+                ")(PORT=" + Port + "))(CONNECT_DATA=(SID=" + Sid + ")));" +
+                "User Id=" + User + ";Password=" + Password + connsys;
 
-            Conn = new OracleConnection();
-            Conn.ConnectionString = connString;
+            Conn = new OracleConnection(connString);
             Conn.Open();
-
             return true;
         }
         catch (Exception ex)
         {
+            Console.WriteLine("Lỗi kết nối Oracle: " + ex.Message);
+            Conn = null;
             return false;
         }
     }
 
     public static OracleConnection Get_Connect()
     {
-        if (Conn == null)
+        if (Conn == null || Conn.State != ConnectionState.Open)
         {
-            Connect();
+            bool ok = Connect();
+            if (!ok)
+            {
+                throw new Exception("Không thể kết nối tới Oracle DB. Vui lòng kiểm tra cấu hình!");
+            }
         }
         return Conn;
     }
@@ -65,13 +71,11 @@ public class DatabaseHelper
     public static int ExecuteNonQuery(string query, params OracleParameter[] parameters)
     {
         using (var conn = Get_Connect())
+        using (var cmd = new OracleCommand(query, conn))
         {
-            conn.Open();
-            using (var cmd = new OracleCommand(query, conn))
-            {
+            if (parameters != null)
                 cmd.Parameters.AddRange(parameters);
-                return cmd.ExecuteNonQuery();
-            }
+            return cmd.ExecuteNonQuery();
         }
     }
 
@@ -79,13 +83,11 @@ public class DatabaseHelper
     public static object ExecuteScalar(string query, params OracleParameter[] parameters)
     {
         using (var conn = Get_Connect())
+        using (var cmd = new OracleCommand(query, conn))
         {
-            conn.Open();
-            using (var cmd = new OracleCommand(query, conn))
-            {
+            if (parameters != null)
                 cmd.Parameters.AddRange(parameters);
-                return cmd.ExecuteScalar();
-            }
+            return cmd.ExecuteScalar();
         }
     }
 
@@ -93,17 +95,15 @@ public class DatabaseHelper
     public static DataTable ExecuteQuery(string query, params OracleParameter[] parameters)
     {
         using (var conn = Get_Connect())
+        using (var cmd = new OracleCommand(query, conn))
         {
-            conn.Open();
-            using (var cmd = new OracleCommand(query, conn))
-            {
+            if (parameters != null)
                 cmd.Parameters.AddRange(parameters);
-                using (var adapter = new OracleDataAdapter(cmd))
-                {
-                    DataTable dt = new DataTable();
-                    adapter.Fill(dt);
-                    return dt;
-                }
+            using (var adapter = new OracleDataAdapter(cmd))
+            {
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+                return dt;
             }
         }
     }
